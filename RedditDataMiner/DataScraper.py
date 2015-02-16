@@ -11,6 +11,9 @@ Created on Wed Feb 11 14:40:57 2015
 #import bs4
 #import urllib
 import praw
+import re
+from nltk.corpus import stopwords
+from bs4 import BeautifulSoup
 
 def is_self_post(domain):
     if(domain[:5] == "self."):
@@ -20,6 +23,8 @@ def is_self_post(domain):
 
 def scrape_subreddit(subreddit, num_posts):
     word_bank = []
+    bad_char = '[(){}<>*?,.!=]'
+    stopWords = stopwords.words('english')
     r = praw.Reddit(user_agent='Wordsszzz')
     sr = r.get_subreddit(subreddit)
     
@@ -38,11 +43,17 @@ def scrape_subreddit(subreddit, num_posts):
 
     for submission in submission_list:
         for s in submission.title.split(" "):
-            word_bank.append(s)
+            s = re.sub(bad_char,"",s)
+            s = s.lower()
+            if s not in stopWords:
+                word_bank.append(s)
         #if it's a self post
         if(is_self_post(submission.domain)):
             for s in submission.selftext.split(" "):
-                word_bank.append(s)
+                s = re.sub(bad_char,"",s)
+                s = s.lower()
+                if s not in stopWords:
+                    word_bank.append(s)
         #Its a link, grab the domain keyword then continue to scrape the site  
         else:
             d = submission.domain.split('.')
