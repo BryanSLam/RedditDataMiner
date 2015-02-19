@@ -23,7 +23,9 @@ def is_self_post(domain):
 
 def scrape_subreddit(subreddit, num_posts):
     word_bank = []
-    bad_char = '[(){}<>*?,.!=]'
+    bad_char = '[(){}<>*?,.!=+-;:%"]'
+    return_keys = '\n'
+    interesting_char = '–'
     stopWords = stopwords.words('english')
     r = praw.Reddit(user_agent='Wordsszzz')
     sr = r.get_subreddit(subreddit)
@@ -44,15 +46,18 @@ def scrape_subreddit(subreddit, num_posts):
     for submission in submission_list:
         for s in submission.title.split(" "):
             s = re.sub(bad_char,"",s)
+            s = re.sub(interesting_char,"",s)
             s = s.lower()
-            if s not in stopWords:
+            if s not in stopWords and s != '':
                 word_bank.append(s)
         #if it's a self post
         if(is_self_post(submission.domain)):
             for s in submission.selftext.split(" "):
                 s = re.sub(bad_char,"",s)
+                s = re.sub(return_keys,"",s)
+                s = re.sub(interesting_char,"",s)
                 s = s.lower()
-                if s not in stopWords:
+                if s not in stopWords and s != '':
                     word_bank.append(s)
         #Its a link, grab the domain keyword then continue to scrape the site  
         else:
