@@ -78,7 +78,7 @@ def scrape_subreddit(subreddit, num_posts):
         
         subreddit_file = open(subreddit,'w')
         for word in word_bank:
-            subreddit_file.write(word)
+            subreddit_file.write('%s\n' % word)
         
             #TODO: Get the text from the website here
     return word_count
