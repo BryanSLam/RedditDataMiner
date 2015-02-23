@@ -12,6 +12,7 @@ Created on Wed Feb 11 14:40:57 2015
 #import urllib
 import praw
 import re
+import sys
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 
@@ -23,7 +24,8 @@ def is_self_post(domain):
 
 def scrape_subreddit(subreddit, num_posts):
     word_bank = []
-    bad_char = '[(){}<>*?,.!=+-;:%"]'
+    word_count = {}
+    bad_char = '[(){}<>*?&,.!=+-;:%"]'
     return_keys = '\n'
     interesting_char = '–'
     stopWords = stopwords.words('english')
@@ -48,8 +50,12 @@ def scrape_subreddit(subreddit, num_posts):
             s = re.sub(bad_char,"",s)
             s = re.sub(interesting_char,"",s)
             s = s.lower()
-            if s not in stopWords and s != '':
-                word_bank.append(s)
+            if s not in stopWords and s != '' and s != 'cdc':
+                if s not in word_bank:
+                    word_bank.append(s)
+                    word_count[s] = 1
+                else:
+                    word_count[s] = word_count[s] + 1
         #if it's a self post
         if(is_self_post(submission.domain)):
             for s in submission.selftext.split(" "):
@@ -57,17 +63,25 @@ def scrape_subreddit(subreddit, num_posts):
                 s = re.sub(return_keys,"",s)
                 s = re.sub(interesting_char,"",s)
                 s = s.lower()
-                if s not in stopWords and s != '':
-                    word_bank.append(s)
+                if s not in stopWords and s != '' and s != 'cdc':
+                    if s in word_bank:
+                       word_count[s] = word_count[s] + 1
+                    if s not in word_bank:
+                       word_bank.append(s)
+                       word_count[s] = 1
         #Its a link, grab the domain keyword then continue to scrape the site  
         else:
             d = submission.domain.split('.')
             #Grab everything except the last part of the url
             for i in range(0,len(d)-1):
-                word_bank.append(d[i])
-            
+                word_bank.append(d[i])          
+        
+        subreddit_file = open(subreddit,'w')
+        for word in word_bank:
+            subreddit_file.write('%s\n' % word)
+        
             #TODO: Get the text from the website here
-    return word_bank
-print(scrape_subreddit("science", 25))
+    return word_bank, word_count
+print(scrape_subreddit("science", 100))
     
 
