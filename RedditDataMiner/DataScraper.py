@@ -50,12 +50,9 @@ def scrape_subreddit(subreddit, num_posts):
             s = re.sub(bad_char,"",s)
             s = re.sub(interesting_char,"",s)
             s = s.lower()
-            if s not in stopWords and s != '' and s != 'cdc':
-                if s not in word_bank:
-                    word_bank.append(s)
-                    word_count[s] = 1
-                else:
-                    word_count[s] = word_count[s] + 1
+            if s not in stopWords and s != '':
+                word_bank.append(s)
+                
         #if it's a self post
         if(is_self_post(submission.domain)):
             for s in submission.selftext.split(" "):
@@ -63,25 +60,28 @@ def scrape_subreddit(subreddit, num_posts):
                 s = re.sub(return_keys,"",s)
                 s = re.sub(interesting_char,"",s)
                 s = s.lower()
-                if s not in stopWords and s != '' and s != 'cdc':
-                    if s in word_bank:
-                       word_count[s] = word_count[s] + 1
-                    if s not in word_bank:
-                       word_bank.append(s)
-                       word_count[s] = 1
+                if s not in stopWords and s != '':
+                    word_bank.append(s)
         #Its a link, grab the domain keyword then continue to scrape the site  
         else:
             d = submission.domain.split('.')
             #Grab everything except the last part of the url
             for i in range(0,len(d)-1):
-                word_bank.append(d[i])          
+                word_bank.append(d[i])  
+            
+    #
+    for word in word_bank:
+        if word in word_count.keys():
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
         
-        subreddit_file = open(subreddit,'w')
-        for word in word_bank:
-            subreddit_file.write('%s\n' % word)
+    subreddit_file = open(subreddit,'w')
+    for word in word_bank:
+        subreddit_file.write('%s\n' % word)
         
             #TODO: Get the text from the website here
-    return word_count
+    return word_count, word_bank
 print(scrape_subreddit("science", 100))
     
 
