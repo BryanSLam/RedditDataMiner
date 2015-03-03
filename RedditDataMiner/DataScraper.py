@@ -13,8 +13,13 @@ Created on Wed Feb 11 14:40:57 2015
 import praw
 import re
 import sys
+import pylab as pl
+import numpy as np
+from collections import OrderedDict
+from operator import itemgetter
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
+
 
 def is_self_post(domain):
     if(domain[:5] == "self."):
@@ -75,13 +80,22 @@ def scrape_subreddit(subreddit, num_posts):
             word_count[word] += 1
         else:
             word_count[word] = 1
+            
+    sorted_word_dict = OrderedDict(sorted(word_count.items(), key = itemgetter(1),reverse = True))
         
     subreddit_file = open(subreddit,'w')
-    for word in word_bank:
-        subreddit_file.write('%s\n' % word)
+    subreddit_file.write(str(sorted_word_dict))
+    
+    X = np.arange(len(sorted_word_dict))
+    pl.bar(X,sorted_word_dict.values(),align='center',width=0.5)
+    pl.xticks(X,sorted_word_dict.keys())
+    ymax = max(sorted_word_dict.values())+1
+    pl.ylim(0,ymax)
+    pl.show()
+
         
             #TODO: Get the text from the website here
-    return word_count, word_bank
+    return sorted_word_dict
 print(scrape_subreddit("science", 100))
     
 
