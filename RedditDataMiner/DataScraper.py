@@ -27,6 +27,44 @@ def is_self_post(domain):
     else:
         return False
 
+#Given a post url, grab relevant words and store in a word bank
+def post_scraper(url):
+    word_bank = []
+    word_count = {}
+    bad_char = '[(){}<>*?&,.!=+-;:%"]'
+    return_keys = '\n'
+    interesting_char = '–'
+    stopWords = stopwords.words('english')    
+    
+    r = praw.Reddit(user_agent='Post_Parser')
+    word_bank = []
+    submission = r.get_submission(url)
+    
+    #Parse
+    for s in submission.title.split(" "):
+        s = re.sub(bad_char,"",s)
+        s = re.sub(interesting_char,"",s)
+        s = s.lower()
+        if s not in stopWords and s != '':
+            word_bank.append(s)
+                
+            #if it's a self post
+    if(is_self_post(submission.domain)):
+        for s in submission.selftext.split(" "):
+            s = re.sub(bad_char,"",s)
+            s = re.sub(return_keys,"",s)
+            s = re.sub(interesting_char,"",s)
+            s = s.lower()
+            if s not in stopWords and s != '':
+                word_bank.append(s)
+                #Its a link, grab the domain keyword then continue to scrape the site  
+    else:
+        d = submission.domain.split('.')
+        #Grab everything except the last part of the url
+        for i in range(0,len(d)-1):
+            word_bank.append(d[i])
+    return word_bank
+
 def scrape_subreddit(subreddit, num_posts):
     word_bank = []
     word_count = {}
@@ -94,7 +132,7 @@ def scrape_subreddit(subreddit, num_posts):
     pl.show()
 
         
-            #TODO: Get the text from the website here
+    #TODO: Get the text from the website here
     return sorted_word_dict
 print(scrape_subreddit("science", 100))
     
