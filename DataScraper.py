@@ -15,13 +15,19 @@ import re
 import sys
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
+import requests
 
 def is_self_post(domain):
     if(domain[:5] == "self."):
         return True
     else:
         return False
-
+def visible(element):
+    if element.parent.name in ['style','script','[document]','head','title']:
+        return False
+    elif re.match('<!--.*-->',str(element)):
+        return False
+    return True
 #Given a post url, grab relevant words and store in a word bank
 def post_scraper(url):
     word_bank = []
@@ -58,6 +64,20 @@ def post_scraper(url):
         #Grab everything except the last part of the url
         for i in range(0,len(d)-1):
             word_bank.append(d[i])
+        url = submission.url
+        req = requests.get(url)
+        soup = BeautifulSoup(req.content)
+        texts = soup.find_all(text=True)
+        visible_texts=filter(visible,texts)
+        for item in visible_texts:
+            for s in item.split(' '):
+                s = re.sub(bad_char,"",s)
+                s = re.sub(return_keys,"",s)
+                s = re.sub(interesting_char,"",s)
+                s = s.lower()
+                if s not in stopWords and s != '':
+                    word_bank.append(s)
+        req.connection.close()
     return word_bank
 #Given a subreddit, grab relevant words and store in a word bank
 def scrape_subreddit(subreddit, num_posts):
@@ -106,6 +126,20 @@ def scrape_subreddit(subreddit, num_posts):
             #Grab everything except the last part of the url
             for i in range(0,len(d)-1):
                 word_bank.append(d[i])  
+            url = submission.url
+            req = requests.get(url)
+            soup = BeautifulSoup(req.content)
+            req.connection.close()
+            texts = soup.find_all(text=True)
+            visible_texts=filter(visible,texts)
+            for item in visible_texts:
+                for s in item.split(' '):
+                    s = re.sub(bad_char,"",s)
+                    s = re.sub(return_keys,"",s)
+                    s = re.sub(interesting_char,"",s)
+                    s = s.lower()
+                    if s not in stopWords and s != '':
+                        word_bank.append(s)
             
     #
     for word in word_bank:
