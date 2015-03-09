@@ -16,7 +16,6 @@ import sys
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 import requests
-
 def is_self_post(domain):
     if(domain[:5] == "self."):
         return True

@@ -121,19 +121,19 @@ def scrape_subreddit(subreddit, num_posts):
             
     sorted_word_dict = OrderedDict(sorted(word_count.items(), key = itemgetter(1),reverse = True))
         
-    subreddit_file = open(subreddit,'w')
-    subreddit_file.write(str(sorted_word_dict))
+#    subreddit_file = open(subreddit,'w')
+#    subreddit_file.write(str(sorted_word_dict))
     
-    X = np.arange(len(sorted_word_dict))
-    pl.bar(X,sorted_word_dict.values(),align='center',width=0.5)
-    pl.xticks(X,sorted_word_dict.keys())
-    ymax = max(sorted_word_dict.values())+1
-    pl.ylim(0,ymax)
-    pl.show()
+#    X = np.arange(len(sorted_word_dict))
+#    pl.bar(X,sorted_word_dict.values(),align='center',width=0.5)
+#    pl.xticks(X,sorted_word_dict.keys())
+#    ymax = max(sorted_word_dict.values())+1
+#    pl.ylim(0,ymax)
+#    pl.show()
 
         
     #TODO: Get the text from the website here
     return sorted_word_dict
-print(scrape_subreddit("science", 100))
+#print(scrape_subreddit("cooking", 100))
     
 
