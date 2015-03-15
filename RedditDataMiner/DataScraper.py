@@ -17,7 +17,7 @@ import pylab as pl
 import numpy as np
 from collections import OrderedDict
 from operator import itemgetter
-from nltk.corpus import stopwords
+#from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 import requests
 
@@ -40,8 +40,15 @@ def post_scraper(url):
     bad_char = '[(){}<>*?&,.!=+-;:%"]'
     return_keys = '\n'
     interesting_char = '–'
-    stopWords = stopwords.words('english')    
     
+    #stopWords = stopwords.words('english')    
+    stopWords = []
+#using a larger set of english stop words 
+    f = open('english_stop_words.txt')
+    for word in f.read().split():
+        stopWords.append(word)
+    f.close()
+    #print(stopWords)
     r = praw.Reddit(user_agent='Post_Parser')
     word_bank = []
     submission = r.get_submission(url)
@@ -91,10 +98,14 @@ def scrape_subreddit(subreddit, num_posts):
     bad_char = '[(){}<>*?&,.!=+-;:%"]'
     return_keys = '\n'
     interesting_char = '–'
-    stopWords = stopwords.words('english')
+    stopWords=[]
     r = praw.Reddit(user_agent='Wordsszzz')
     sr = r.get_subreddit(subreddit)
-    
+    f = open('english_stop_words.txt')
+    for word in f.read().split():
+        stopWords.append(word)
+    f.close
+    #print(stopWords)
     submission_list = []
     #Grab submissions from the 3 tabs might be too slow, maybe there's faster
     #way to grab stuff
@@ -168,6 +179,6 @@ def scrape_subreddit(subreddit, num_posts):
         
     #TODO: Get the text from the website here
     return sorted_word_dict
-#print(scrape_subreddit("cooking", 100))
+print(scrape_subreddit("cooking", 100))
     
 
