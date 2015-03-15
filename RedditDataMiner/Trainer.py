@@ -3,6 +3,8 @@
 #subreddits is a list of subreddits (strings) you want to build the trainer off of
 import DataScraper
 import nltk
+from operator import itemgetter
+from collections import OrderedDict
 
 def trainer(url, subreddits):
     #Post word bank should be an array of words that comes from the post we're testing
@@ -58,9 +60,14 @@ def trainer(url, subreddits):
         #Calculate as a percentage
         current_score = (current_score/len(post_word_bank)) * 100
         subreddit_scores[subreddit] = current_score
-        print(dictionary)
-        print (current_score)
+        
+    sorted_subreddit_scores = OrderedDict(sorted(subreddit_scores.items(), key = itemgetter(1),reverse = True))
+    return sorted_subreddit_scores
+
     #Classifier save for you guys tomorrow to think of a way you want to do this, 
     #or we can do it as a group
     #classifier = nltk.NaiveBayesClassifier.train(train_set)
-trainer("", ["Science"])
+        
+        
+print(trainer("", ["science","cooking","politics", "worldnews", "truegamers", 
+                   "history", "religon","economics","programming"]))
