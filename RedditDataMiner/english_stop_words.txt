@@ -219,7 +219,6 @@ however
 hundred
 i
 id
-i'd
 ie
 if
 i'll
@@ -244,7 +243,6 @@ it
 itd
 it'll
 its
-it's
 itself
 i've
 j
@@ -526,15 +524,11 @@ until
 up
 us
 very
-want
-wanted
-wants
 was
 wasn't
 way
 we
 we'd
-went
 we'll
 we're
 we've
