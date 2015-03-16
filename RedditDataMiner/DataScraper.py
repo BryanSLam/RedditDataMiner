@@ -79,23 +79,33 @@ def post_scraper(url):
         url = submission.url
         req = requests.get(url)
         soup = BeautifulSoup(req.content)
-        texts = soup.find_all(text=True)
-        visible_texts=filter(visible,texts)
-        for item in visible_texts:
-            for s in item.split(' '):
-                s = re.sub(bad_char,"",s)
-                s = re.sub(return_keys,"",s)
-                s = re.sub(interesting_char,"",s)
-                s = s.lower()
-                if s not in stopWords and s != '':
-                    word_bank.append(s)
+#        texts = soup.find_all(text=True)
+#        visible_texts=filter(visible,texts)
+#        for item in visible_texts:
+#            for s in item.split(' '):
+#                s = re.sub(bad_char,"",s)
+#                s = re.sub(return_keys,"",s)
+#                s = re.sub(interesting_char,"",s)
+#                s = s.lower()
+#                if s not in stopWords and s != '':
+#                    word_bank.append(s)
+        paragraphTag = soup.find_all('p')
+        for item in paragraphTag:
+            for word in item.find_all(text=True):
+                for s in word.split():
+                    s = re.sub(bad_char,"",s)
+                    s = re.sub(return_keys,"",s)
+                    s = re.sub(interesting_char,"",s)
+                    s = s.lower()
+                    if s not in stopWords and s != '':
+                        word_bank.append(s)
         req.connection.close()
     return word_bank
 
 def scrape_subreddit(subreddit, num_posts):
     word_bank = []
     word_count = {}
-    bad_char = '[(){}<>*?&,.!=+-;:%"]'
+    bad_char = '[(){}<>*?&,.!=+-;$:%"]'
     return_keys = '\n'
     interesting_char = '–'
     stopWords=[]
@@ -145,16 +155,26 @@ def scrape_subreddit(subreddit, num_posts):
             url = submission.url
             req = requests.get(url)
             soup = BeautifulSoup(req.content)
-            texts = soup.find_all(text=True)
-            visible_texts=filter(visible,texts)
-            for item in visible_texts:
-                for s in item.split(' '):
-                    s = re.sub(bad_char,"",s)
-                    s = re.sub(return_keys,"",s)
-                    s = re.sub(interesting_char,"",s)
-                    s = s.lower()
-                    if s not in stopWords and s != '':
-                        word_bank.append(s)
+#            texts = soup.find_all(text=True)
+#            visible_texts=filter(visible,texts)
+#            for item in visible_texts:
+#                for s in item.split(' '):
+#                    s = re.sub(bad_char,"",s)
+#                    s = re.sub(return_keys,"",s)
+#                    s = re.sub(interesting_char,"",s)
+#                    s = s.lower()
+#                    if s not in stopWords and s != '':
+#                        word_bank.append(s)
+            paragraphTag = soup.find_all('p')
+            for item in paragraphTag:
+                for word in item.find_all(text=True):
+                    for s in word.split():
+                        s = re.sub(bad_char,"",s)
+                        s = re.sub(return_keys,"",s)
+                        s = re.sub(interesting_char,"",s)
+                        s = s.lower()
+                        if s not in stopWords and s != '':
+                            word_bank.append(s)
             req.connection.close()
             
     #
@@ -179,6 +199,6 @@ def scrape_subreddit(subreddit, num_posts):
         
     #TODO: Get the text from the website here
     return sorted_word_dict
-print(scrape_subreddit("cooking", 100))
-    
-
+#print(scrape_subreddit("programming", 25))
+#print(scrape_subreddit("economics",25))   
+#print(post_scraper('http://www.reddit.com/r/philosophy/comments/2xoet7/why_our_children_dont_think_there_are_moral_facts/'))

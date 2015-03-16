@@ -113,6 +113,7 @@ did
 didn't
 different
 do
+don't
 does
 doesn't
 doing
@@ -497,6 +498,7 @@ sufficiently
 suggest
 sup
 sure
+th
 than
 that
 that's
@@ -522,12 +524,14 @@ too
 under
 until
 up
+us
 very
 want
 wanted
 wants
 was
 wasn't
+way
 we
 we'd
 went
@@ -536,6 +540,7 @@ we're
 we've
 were
 weren't
+will
 what
 what's
 when
