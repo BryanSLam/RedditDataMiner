@@ -6,10 +6,17 @@ import nltk
 from operator import itemgetter
 from collections import OrderedDict
 
-def trainer(url, subreddits):
-    #Post word bank should be an array of words that comes from the post we're testing
-    post_word_bank = DataScraper.post_scraper("http://www.reddit.com/r/science/comments/2y0k2l/science_ama_series_we_are_susannah_burrows_and/")
-    
+#urls = array of pairs (subreddit,url)
+#subreddits = array of subreddits
+def trainer(urls, subreddits):
+    #Post word bank should be an array of pairs where the first part is the subreddit
+    #and the second part is the word_bank
+    all_scores = []
+    post_word_bank =[]    
+    for s in urls:
+        all_scores.append([])
+        url_word_bank = DataScraper.post_scraper(s[1])
+        post_word_bank.append((s[0], url_word_bank))
     
     #So heres my current strategy to analyze posts ONLY using the frequency
     #We can do another one using the nltk classifier if time given, but feel free
@@ -43,8 +50,8 @@ def trainer(url, subreddits):
     
     #FREQUENCY ALGORITHIM CODE:
     #Loop through the list of subreddits and for each one assign a score
-    subreddit_scores = {}
     for subreddit in subreddits:
+        index = 0
         current_score = 0
         dictionary = DataScraper.scrape_subreddit(subreddit, 25)
         subreddit_bank = []
@@ -52,22 +59,30 @@ def trainer(url, subreddits):
             if(dictionary[key] >= 2):
                 #Subreddit word bankerino
                 subreddit_bank.append(key)
-        for word in post_word_bank:
-            #If the word is in the bank add a point
-            if(word in subreddit_bank):
-                current_score = current_score + 1
+        #For each post's word bank, compute the score for that subreddit
+        for bank in post_word_bank:
+            current_score=0
+            for word in bank[1]:
+                #If the word is in the bank add a point
+                if(word in subreddit_bank):
+                    current_score = current_score + 1
         
-        #Calculate as a percentage
-        current_score = (current_score/len(post_word_bank)) * 100
-        subreddit_scores[subreddit] = current_score
+                #Calculate as a percentage
+            current_score = (current_score/len(bank[1])) * 100
+            subreddit_score = (subreddit, current_score)                
+            all_scores[index].append(subreddit_score)
+            index = index+1
+    scores = {}
+    for i in range(0, len(urls)):
+        scores[urls[i][0].upper()] = all_scores[i]
         
-    sorted_subreddit_scores = OrderedDict(sorted(subreddit_scores.items(), key = itemgetter(1),reverse = True))
-    return sorted_subreddit_scores
+    return scores
 
     #Classifier save for you guys tomorrow to think of a way you want to do this, 
     #or we can do it as a group
     #classifier = nltk.NaiveBayesClassifier.train(train_set)
         
         
-print(trainer("", ["science","cooking","politics", "worldnews", "truegamers", 
-                   "history", "religon","economics","programming"]))
+print(trainer([("science","http://www.reddit.com/r/science/comments/2y0k2l/science_ama_series_we_are_susannah_burrows_and"),
+               ("cooking","http://www.reddit.com/r/Cooking/comments/2z19u0/shrimp_steam_vs_boil_shell_on_vs_off/")], 
+              ["science","cooking","politics", "worldnews"]))
