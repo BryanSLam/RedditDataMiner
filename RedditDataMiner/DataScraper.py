@@ -200,5 +200,5 @@ def scrape_subreddit(subreddit, num_posts):
     #TODO: Get the text from the website here
     return sorted_word_dict
 #print(scrape_subreddit("programming", 25))
-#print(scrape_subreddit("economics",25))   
+#print(scrape_subreddit("politics",25))   
 #print(post_scraper('http://www.reddit.com/r/philosophy/comments/2xoet7/why_our_children_dont_think_there_are_moral_facts/'))
