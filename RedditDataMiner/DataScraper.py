@@ -82,7 +82,7 @@ def post_scraper(url):
         req = requests.get(url)
         #BeautifulSoup takes the html from requests to generate a parse tree
         soup = BeautifulSoup(req.content)
-#       #this will only return all of the <p> tags where text lives in html pages
+        #this will only return all of the <p> tags where text lives in html pages
         paragraphTag = soup.find_all('p')
         #paragraphs are stored in a list
         for item in paragraphTag:
@@ -118,10 +118,8 @@ def scrape_subreddit(subreddit, num_posts):
     for word in f.read().split():
         stopWords.append(word)
     f.close
-    #print(stopWords)
     submission_list = []
-    #Grab submissions from the 3 tabs might be too slow, maybe there's faster
-    #way to grab stuff
+    #We grab the num_posts from each section of the subreddit
     for sub in sr.get_hot(limit=num_posts):
         if((sub in submission_list) is False):
             submission_list.append(sub)
@@ -235,5 +233,4 @@ def graphTopKSubredditWords(subreddit,K):
 #The below function calls were used in testing the individual parts of the code.    
 #graphTopKSubredditWords("science",20)    
 print(scrape_subreddit("philosophy", 15))
-#print(scrape_subreddit("politics",25))   
 #print(post_scraper('http://www.reddit.com/r/philosophy/comments/2xoet7/why_our_children_dont_think_there_are_moral_facts/'))
