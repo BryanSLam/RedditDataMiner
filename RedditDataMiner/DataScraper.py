@@ -12,16 +12,14 @@ Created on Wed Feb 11 14:40:57 2015
 #import urllib
 import praw
 import re
-import sys
 import pylab as pl
-import numpy as np
 from collections import OrderedDict
 from operator import itemgetter
 #from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 #requests are used to get the html from urls
 import requests
-import numpy as np
+
 
 def is_self_post(domain):
     if(domain[:5] == "self."):
@@ -41,7 +39,7 @@ def post_scraper(url):
     #So we had to remove any instances of '\n' that our scrapper might grab
     #To simplify the words in the word bank, we chose to remove all hyphend words and take each word seperately.
     word_bank = []
-    word_count = {}
+    #word_count = {}
     bad_char = '[(){}<>*?&,.!=+-;:%"]'
     return_keys = '\n'
     interesting_char = '–'
