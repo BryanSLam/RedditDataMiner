@@ -19,8 +19,9 @@ from collections import OrderedDict
 from operator import itemgetter
 #from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
+#requests are used to get the html from urls
 import requests
-
+import numpy as np
 
 def is_self_post(domain):
     if(domain[:5] == "self."):
@@ -76,30 +77,29 @@ def post_scraper(url):
         #Grab everything except the last part of the url
         for i in range(0,len(d)-1):
             word_bank.append(d[i])
+#post url is stored in submission url, store to use in beautiful soup
         url = submission.url
         req = requests.get(url)
+        #BeautifulSoup takes the html from requests to generate a parse tree
         soup = BeautifulSoup(req.content)
-#        texts = soup.find_all(text=True)
-#        visible_texts=filter(visible,texts)
-#        for item in visible_texts:
-#            for s in item.split(' '):
-#                s = re.sub(bad_char,"",s)
-#                s = re.sub(return_keys,"",s)
-#                s = re.sub(interesting_char,"",s)
-#                s = s.lower()
-#                if s not in stopWords and s != '':
-#                    word_bank.append(s)
+#       #this will only return all of the <p> tags where text lives in html pages
         paragraphTag = soup.find_all('p')
+        #paragraphs are stored in a list
         for item in paragraphTag:
-            for word in item.find_all(text=True):
-                for s in word.split():
-                    s = re.sub(bad_char,"",s)
-                    s = re.sub(return_keys,"",s)
-                    s = re.sub(interesting_char,"",s)
+            #each paragraph is a list of string that may or not be text
+            for string in item.find_all(text=True):
+                #split the string into words
+                for s in string.split():
+                    #check if it can be filted out
+                    s = re.sub(bad_char,"",s)#unwanted char
+                    s = re.sub(return_keys,"",s)#symbols
+                    s = re.sub(interesting_char,"",s)#char's that skew data
                     s = s.lower()
-                    if s not in stopWords and s != '':
+                    if s not in stopWords and s != '':#remove stop words
                         word_bank.append(s)
+#need to close connection to url.        
         req.connection.close()
+        
     return word_bank
 
 def scrape_subreddit(subreddit, num_posts):
@@ -152,19 +152,11 @@ def scrape_subreddit(subreddit, num_posts):
             #Grab everything except the last part of the url
             for i in range(0,len(d)-1):
                 word_bank.append(d[i])
+############################identical as previous section
+                #for comments please refer to line 80
             url = submission.url
             req = requests.get(url)
             soup = BeautifulSoup(req.content)
-#            texts = soup.find_all(text=True)
-#            visible_texts=filter(visible,texts)
-#            for item in visible_texts:
-#                for s in item.split(' '):
-#                    s = re.sub(bad_char,"",s)
-#                    s = re.sub(return_keys,"",s)
-#                    s = re.sub(interesting_char,"",s)
-#                    s = s.lower()
-#                    if s not in stopWords and s != '':
-#                        word_bank.append(s)
             paragraphTag = soup.find_all('p')
             for item in paragraphTag:
                 for word in item.find_all(text=True):
@@ -176,6 +168,7 @@ def scrape_subreddit(subreddit, num_posts):
                         if s not in stopWords and s != '':
                             word_bank.append(s)
             req.connection.close()
+            ########
             
     #
     for word in word_bank:
@@ -185,20 +178,50 @@ def scrape_subreddit(subreddit, num_posts):
             word_count[word] = 1
             
     sorted_word_dict = OrderedDict(sorted(word_count.items(), key = itemgetter(1),reverse = True))
-        
-#    subreddit_file = open(subreddit,'w')
-#    subreddit_file.write(str(sorted_word_dict))
-    
-#    X = np.arange(len(sorted_word_dict))
-#    pl.bar(X,sorted_word_dict.values(),align='center',width=0.5)
-#    pl.xticks(X,sorted_word_dict.keys())
-#    ymax = max(sorted_word_dict.values())+1
-#    pl.ylim(0,ymax)
-#    pl.show()
-
-        
-    #TODO: Get the text from the website here
     return sorted_word_dict
-#print(scrape_subreddit("programming", 25))
+#percentage function from assignment 1
+def percentage(count, total):
+     if count < 0:
+         raise ValueError("Invalid Count value")
+     elif total <= 0:
+         raise ValueError("Invalid Total value")
+     percent = (count / total)*100
+     return percent    
+def graphTopKSubredditWords(subreddit,K):
+    if K < 1:
+        raise ValueError("Invalid K value")
+    #get the key words for the subreddit
+    subredditWords = scrape_subreddit(subreddit,15)
+    #sum dictionary to get the total number of keywords    
+    Len = sum(subredditWords.values())
+    #get top k words from ordered dictionary
+    #0 ... K-1 for K words
+    wordsToPlot = []
+    for key in range(0,K):
+       wordsToPlot.append(subredditWords.popitem(False))
+    #print(wordsToPlot)
+    percentArray = []
+    #set for long the x axis will be
+    xArray = range(1,K+1)
+    for item in wordsToPlot:
+        #find the percentage the top words are of entire word back
+        x = percentage(item[1],Len)
+        percentArray.append(x)
+    #cumlitative sum of top k words
+    test = pl.cumsum(percentArray)
+    pl.plot(xArray,test)
+    #after running multiple times starting at 100
+    #10 was found as the best way to display the data, since they never
+    #went above 10 percent
+    pl.axis([0,K,0,10])
+    pl.xticks(xArray)
+    pl.ylabel("Percentage of keywords for Subreddit")
+    pl.xlabel("The top K frequent keywords")
+    pl.title(subreddit)
+    pl.show()
+    return
+#The below function calls were used in testing the individual parts of the code.    
+#graphTopKSubredditWords("science",20)    
+#print(scrape_subreddit("science", 15))
 #print(scrape_subreddit("politics",25))   
 #print(post_scraper('http://www.reddit.com/r/philosophy/comments/2xoet7/why_our_children_dont_think_there_are_moral_facts/'))
