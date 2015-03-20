@@ -36,6 +36,10 @@ def visible(element):
     return True
 #Given a post url, grab relevant words and store in a word bank
 def post_scraper(url):
+    #create the data containers and delimiters
+    #With self-text posts, the return key is often used multiple times for formatting
+    #So we had to remove any instances of '\n' that our scrapper might grab
+    #To simplify the words in the word bank, we chose to remove all hyphend words and take each word seperately.
     word_bank = []
     word_count = {}
     bad_char = '[(){}<>*?&,.!=+-;:%"]'
@@ -55,6 +59,10 @@ def post_scraper(url):
     submission = r.get_submission(url)
     
     #Parse
+    #For submission titles and self-text, we need to first split all words seperated by a space into individual tokens
+    #following this, we need to filter certain characters, such as the bad characters and the hyphen, and replace them with an empty string
+    #then change all the texts into lower case
+    #Next we check if the word is in the list of stop words and isn't an empty string, where if it isn't we add it to the list for total words
     for s in submission.title.split(" "):
         s = re.sub(bad_char,"",s)
         s = re.sub(interesting_char,"",s)
@@ -103,6 +111,9 @@ def post_scraper(url):
     return word_bank
 
 def scrape_subreddit(subreddit, num_posts):
+    #With self-text posts, the return key is often used multiple times for formatting
+    #So we had to remove any instances of '\n' that our scrapper might grab
+    #To simplify the words in the word bank, we chose to remove all hyphend words and take each word seperately.
     word_bank = []
     word_count = {}
     bad_char = '[(){}<>*?&,.!=+-;$:%"]'
@@ -130,6 +141,13 @@ def scrape_subreddit(subreddit, num_posts):
             submission_list.append(sub)
 
     for submission in submission_list:
+        
+        #For submission titles and self-text, we need to first split all words seperated by a space into individual tokens
+        #following this, we need to filter certain characters, such as the bad characters and the hyphen, and replace them with an empty string
+        #then change all the texts into lower case
+        #Next we check if the word is in the list of stop words and isn't an empty string, where if it isn't we add it to the list for total words        
+        
+        #Get the title of the submission        
         for s in submission.title.split(" "):
             s = re.sub(bad_char,"",s)
             s = re.sub(interesting_char,"",s)
@@ -170,13 +188,15 @@ def scrape_subreddit(subreddit, num_posts):
             req.connection.close()
             ########
             
-    #
+    #Here is the the first iteration of the data set, a simple dictionary that uses the value as the frequency of the word
+    #if it sees the word in the dictionary, it increments the frequency, otherwise it will create a new entry with a value of 1
     for word in word_bank:
         if word in word_count.keys():
             word_count[word] += 1
         else:
             word_count[word] = 1
-            
+    
+    #This is the final version of the data set, where it sorts the previous data set by the highest frequency        
     sorted_word_dict = OrderedDict(sorted(word_count.items(), key = itemgetter(1),reverse = True))
     return sorted_word_dict
 #percentage function from assignment 1
