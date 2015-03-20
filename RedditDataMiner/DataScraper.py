@@ -26,12 +26,6 @@ def is_self_post(domain):
         return True
     else:
         return False
-def visible(element):
-    if element.parent.name in ['style','script','[document]','head','title']:
-        return False
-    elif re.match('<!--.*-->',str(element)):
-        return False
-    return True
 #Given a post url, grab relevant words and store in a word bank
 def post_scraper(url):
     #create the data containers and delimiters
@@ -240,6 +234,6 @@ def graphTopKSubredditWords(subreddit,K):
     return
 #The below function calls were used in testing the individual parts of the code.    
 #graphTopKSubredditWords("science",20)    
-#print(scrape_subreddit("science", 15))
+print(scrape_subreddit("philosophy", 15))
 #print(scrape_subreddit("politics",25))   
 #print(post_scraper('http://www.reddit.com/r/philosophy/comments/2xoet7/why_our_children_dont_think_there_are_moral_facts/'))

@@ -82,7 +82,7 @@ def trainer(urls, subreddits):
     #or we can do it as a group
     #classifier = nltk.NaiveBayesClassifier.train(train_set)
         
-        
+#print(trainer([("drugs","http://www.reddit.com/r/Drugs/comments/2wzg83/alaska_becomes_3rd_state_with_legal_marijuana/")],["cooking","drugs","economics","fitness","history","law","lgbt","philosophy","politics","programming","religion","science","technology","truegaming","worldnews"]))      
 print(trainer([("science","http://www.reddit.com/r/science/comments/2y0k2l/science_ama_series_we_are_susannah_burrows_and"),
                ("science","http://www.reddit.com/r/science/comments/2w2gr7/a_hard_drive_made_from_dna_preserved_in_glass/"),
                ("cooking","http://www.reddit.com/r/Cooking/comments/2z19u0/shrimp_steam_vs_boil_shell_on_vs_off/"),
