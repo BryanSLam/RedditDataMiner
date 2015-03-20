@@ -1,0 +1,22 @@
+There are two pairs of data for each time the classifer was ran.
+The two sets of data follow the following name scheme ,"results for day 1" and "sortedDay1".
+"results for day 1" is the raw output from the classifer, and "sortedDay1" is the output of the data verifier. The data verifier takes the raw data and sorts it in highest to lowest order. The verifier then checks the top post for each of the posts. If the post matches the expected output then the successCounter is incremented by one. The result is found on the first line of the "sortedDay" files.
+
+Here are the results listed out
+day1 	: 8
+day2 am	: 8
+day2 pm : 8
+day3 am : 10 
+day4 am : 12
+day4 pm : 11
+
+8+8+8+10+12+11 = 57
+57/ 6 = 9.5
+
+The average accuracy of posts is 9.5.
+To determine percentage of correctness of the classifer
+(9.5 / 30)*100 = 31.67 //30 is the total number of posts in the test set
+
+Our classifier has a 31.67% rate of for 15 classes.
+
+
